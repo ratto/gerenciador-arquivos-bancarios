@@ -31,3 +31,10 @@ yarn-error.log*
 
 # local .env files
 .env.local*
+
+/coverage
+
+# Test artifacts
+/tests/e2e/videos
+/tests/e2e/screenshots
+/.nyc_output
