@@ -2,20 +2,20 @@
   <q-layout view="lHh Lpr lFf">
     <q-header elevated>
       <q-toolbar>
-        <q-btn flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+        <q-btn flat dense round icon="menu" aria-label="Menu" @click="handleToggleLeftDrawer" />
 
         <q-toolbar-title> Quasar App </q-toolbar-title>
 
-        <div>Quasar v{{ $q.version }}</div>
+        <div>Quasar v{{ quasarVersion }}</div>
 
         <q-btn
           flat
           round
           dense
-          :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
-          :aria-label="$q.dark.isActive ? 'Ativar modo claro' : 'Ativar modo escuro'"
+          :icon="darkMode ? 'light_mode' : 'dark_mode'"
+          :aria-label="darkMode ? 'Ativar modo claro' : 'Ativar modo escuro'"
           data-testid="dark-mode-toggle"
-          @click="$q.dark.toggle()"
+          @click="handleToggleDarkMode"
         />
       </q-toolbar>
     </q-header>
@@ -35,12 +35,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { computed, ref } from 'vue';
 import { useQuasar } from 'quasar';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
 
 const $q = useQuasar();
 
+const quasarVersion = $q.version;
 const linksList: EssentialLinkProps[] = [
   {
     title: 'Docs',
@@ -86,9 +87,15 @@ const linksList: EssentialLinkProps[] = [
   },
 ];
 
-const leftDrawerOpen = ref(false);
+const leftDrawerOpen = ref<boolean>(false);
 
-function toggleLeftDrawer() {
+const darkMode = computed(() => $q.dark.isActive);
+
+const handleToggleLeftDrawer = () => {
   leftDrawerOpen.value = !leftDrawerOpen.value;
-}
+};
+
+const handleToggleDarkMode = () => {
+  $q.dark.toggle();
+};
 </script>

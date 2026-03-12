@@ -30,13 +30,15 @@ Arquivos de teste:
 
 Veja `docs/WORKFLOW.md` para o guia completo de orquestração.
 
-Três subagentes estão definidos em `.claude/agents/`:
+Os agentes estão definidos em `.claude/agents/`:
 
-| Agente | Arquivo | Papel |
-|--------|---------|-------|
-| AGENT_ARCH | `.claude/agents/arch.md` | Lê SPEC.md, escreve TASKS.md, orquestra DEV e QA |
-| AGENT_DEV  | `.claude/agents/dev.md`  | Lê TASKS.md, implementa features + testes, escreve DEV_REPORT.md |
-| AGENT_QA   | `.claude/agents/qa.md`   | Code review, executa testes, escreve QA_REPORT.md, implementa E2E |
+| Agente | Arquivo | Tipo | Papel |
+|--------|---------|------|-------|
+| AGENT_ARCH | `.claude/agents/arch.md` | **Agente principal** | Lê SPEC.md, escreve TASKS.md, orquestra DEV e QA |
+| AGENT_DEV  | `.claude/agents/dev.md`  | **Subagente** do ARCH | Lê TASKS.md, implementa features + testes, escreve DEV_REPORT.md |
+| AGENT_QA   | `.claude/agents/qa.md`   | **Subagente** do ARCH | Code review, executa testes, escreve QA_REPORT.md, implementa E2E |
+
+**Modelo de contexto:** O AGENT_ARCH é invocado pela sessão principal do Claude Code. Ele invoca AGENT_DEV e AGENT_QA como **subagentes em contextos completamente novos e independentes** (equivalente a abas separadas). Os subagentes não herdam contexto do ARCH — toda informação necessária deve estar no prompt de invocação ou nos artefatos em disco.
 
 Para iniciar um ciclo: copie `docs/SPEC_TEMPLATE.md` → `docs/SPEC.md`, preencha,
 depois peça: "Use o AGENT_ARCH para ler docs/SPEC.md e projetar as tarefas deste ciclo."
@@ -81,6 +83,39 @@ O projeto segue a camada MVVM de forma explícita:
 - `src/boot/` — Quasar boot files (plugins that run before the Vue app mounts). Add entries here and register them in `quasar.config.ts → boot[]`.
 - `src/css/app.scss` — Global styles entry point.
 - `quasar.config.ts` — Central config for build targets, Vite plugins, extras (icons/fonts), framework plugins, and SSR/PWA/Electron settings.
+
+## Convenções Vue / `<script setup>`
+
+### Exposição de dados ao template
+
+- **Composables de framework** (e.g. `useQuasar()`, `useRouter()`) **não devem ser expostos diretamente ao template**. Extraia os valores necessários em `const`, `ref` ou `computed`:
+
+  ```ts
+  // ✅ correto
+  const $q = useQuasar();
+  const quasarVersion = $q.version;              // const simples
+  const darkMode = computed(() => $q.dark.isActive); // computed reativo
+
+  // ❌ evitar
+  // {{ $q.version }} no template
+  ```
+
+- **Composables customizados** (e.g. `useForm()`, `useUpload()`) podem ser desestruturados e expostos normalmente:
+
+  ```ts
+  const { form, validateForm } = useForm(); // ✅ pode ser usado diretamente no template
+  ```
+
+### Nomenclatura de funções no template
+
+Funções chamadas por eventos do template (`@click`, `@submit`, etc.) devem ter o nome iniciado por `handle`:
+
+```ts
+const handleToggleDarkMode = () => { ... };  // ✅
+const handleSubmitForm = () => { ... };       // ✅
+
+function toggleDrawer() { ... }               // ❌ não segue a convenção
+```
 
 ## Quasar-specific conventions
 
