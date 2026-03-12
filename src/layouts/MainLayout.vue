@@ -7,6 +7,16 @@
         <q-toolbar-title> Quasar App </q-toolbar-title>
 
         <div>Quasar v{{ $q.version }}</div>
+
+        <q-btn
+          flat
+          round
+          dense
+          :icon="$q.dark.isActive ? 'light_mode' : 'dark_mode'"
+          :aria-label="$q.dark.isActive ? 'Ativar modo claro' : 'Ativar modo escuro'"
+          data-testid="dark-mode-toggle"
+          @click="$q.dark.toggle()"
+        />
       </q-toolbar>
     </q-header>
 
@@ -26,7 +36,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { useQuasar } from 'quasar';
 import EssentialLink, { type EssentialLinkProps } from 'components/EssentialLink.vue';
+
+const $q = useQuasar();
 
 const linksList: EssentialLinkProps[] = [
   {
