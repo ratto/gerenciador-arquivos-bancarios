@@ -34,15 +34,18 @@ Três subagentes estão definidos em `.claude/agents/`:
 
 | Agente | Arquivo | Papel |
 |--------|---------|-------|
-| AGENT_ARCH | `.claude/agents/arch.md` | Lê SPEC.md, escreve TASKS.md, orquestra DEV e QA |
-| AGENT_DEV  | `.claude/agents/dev.md`  | Lê TASKS.md, implementa features + testes, escreve DEV_REPORT.md |
-| AGENT_QA   | `.claude/agents/qa.md`   | Code review, executa testes, escreve QA_REPORT.md, implementa E2E |
+| AGENT_ARCH | `.claude/agents/arch.md` | Orquestrador: lê SPEC.md, escreve TASKS.md, controla contador de voltas (máx. 3) |
+| AGENT_DEV  | `.claude/agents/dev.md`  | Implementa com TDD estrito (teste → falha → implementa → passa), escreve DEV_REPORT.md |
+| AGENT_QA   | `.claude/agents/qa.md`   | Code review, testes; se bugs → inicia novo AGENT_DEV; se OK → E2E + QA_REPORT.md |
+
+Cada agente é iniciado como **nova instância** pelo AGENT_ARCH (ou pelo AGENT_QA para correções).
+O AGENT_ARCH monitora o número de voltas e interrompe o ciclo se ultrapassar 3 correções.
 
 Para iniciar um ciclo: copie `docs/SPEC_TEMPLATE.md` → `docs/SPEC.md`, preencha,
 depois peça: "Use o AGENT_ARCH para ler docs/SPEC.md e projetar as tarefas deste ciclo."
 
 Branches seguem o padrão `[tipo]/[número-da-spec]-[breve-descrição]` criadas a partir de `develop`.
-Após QA aprovado, o AGENT_ARCH faz merge na `develop` e push para o GitHub; o pipeline é tratado manualmente pelo humano.
+Após QA aprovado, o AGENT_ARCH faz push da branch de feature para o GitHub. O merge na `develop` e o pipeline são responsabilidade do humano.
 
 ## Arquitetura MVVM
 
