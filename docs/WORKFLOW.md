@@ -30,6 +30,7 @@ git checkout -b [tipo]/[número-da-spec]-[breve-descrição]
 
 Copie `docs/SPEC_TEMPLATE.md` para `docs/SPEC.md` e preencha todas as seções.
 A spec representa uma história de usuário ou fatia de funcionalidade.
+Escreva os **Acceptance Criteria específicos** desta feature — os requisitos globais já estão em `docs/DEFINITION_OF_DONE.md`.
 
 ### Passo 3 — Acione o workflow
 
@@ -65,11 +66,14 @@ Você pode invocar qualquer agente diretamente na sessão principal:
 ## Ciclo de Vida dos Artefatos
 
 ```
-docs/SPEC.md             ← humano escreve (um por ciclo)
-docs/TASKS.md            ← AGENT_ARCH escreve, AGENT_DEV lê
-docs/DEV_REPORT.md       ← AGENT_DEV escreve, AGENT_QA lê
-docs/QA_REPORT.md        ← AGENT_QA escreve, humano lê
+docs/DEFINITION_OF_DONE.md  ← humano mantém (permanente, todos os ciclos)
+docs/SPEC.md                ← humano escreve (um por ciclo, com Acceptance Criteria da feature)
+docs/TASKS.md               ← AGENT_ARCH escreve, AGENT_DEV lê
+docs/DEV_REPORT.md          ← AGENT_DEV escreve, AGENT_QA lê
+docs/QA_REPORT.md           ← AGENT_QA escreve, humano lê
 ```
+
+> **DEFINITION_OF_DONE.md** contém os requisitos globais da aplicação (TypeScript, MVVM, CNAB, testes, pipeline). Os agentes ARCH, DEV e QA devem consultá-lo em todo ciclo. Os Acceptance Criteria específicos da feature ficam em `docs/SPEC.md`.
 
 Os artefatos são commitados junto com as mudanças de código e servem como trilha de auditoria de cada ciclo.
 
@@ -124,11 +128,12 @@ Acrescente o número do ciclo ao TASKS.md e nos relatórios:
 docs/
   PRD.md
   WORKFLOW.md              ← este arquivo
+  DEFINITION_OF_DONE.md   ← requisitos globais (permanente, todos os ciclos)
   SPEC_TEMPLATE.md
   TASKS_TEMPLATE.md
   DEV_REPORT_TEMPLATE.md
   QA_REPORT_TEMPLATE.md
-  SPEC.md                  ← humano gerencia por ciclo
+  SPEC.md                  ← humano gerencia por ciclo (Acceptance Criteria da feature)
   TASKS.md                 ← agentes gerenciam
   DEV_REPORT.md            ← agentes gerenciam
   QA_REPORT.md             ← agentes gerenciam
