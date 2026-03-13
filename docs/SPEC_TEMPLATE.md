@@ -2,6 +2,10 @@
 
 > Copie este arquivo para `docs/SPEC.md` a cada novo ciclo de desenvolvimento.
 > Preencha todas as seções. O AGENT_ARCH lerá este arquivo.
+>
+> **Requisitos globais da aplicação** (TypeScript, MVVM, CNAB, testes, pipeline) estão em
+> `docs/DEFINITION_OF_DONE.md` e se aplicam a todos os ciclos. Aqui ficam apenas os
+> critérios **específicos desta feature**.
 
 ## História de Usuário
 
@@ -9,11 +13,11 @@ Como [papel],
 quero [ação],
 para que [benefício].
 
-## Critérios de Aceite
+## Acceptance Criteria (critérios específicos desta feature)
 
-- [ ] CA1: ...
-- [ ] CA2: ...
-- [ ] CA3: ...
+- [ ] AC1: ...
+- [ ] AC2: ...
+- [ ] AC3: ...
 
 ## Escopo
 
