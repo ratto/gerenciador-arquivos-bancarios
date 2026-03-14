@@ -23,12 +23,22 @@ vi.mock('quasar', () => ({
 // Must import after vi.mock
 import MainLayout from 'layouts/MainLayout.vue';
 
-// Custom QBtn stub that renders as a real <button> preserving all bound attributes
-const QBtnStub = defineComponent({
-  name: 'QBtn',
+// QToggle stub renders as <input type="checkbox"> preserving all bound attributes
+const QToggleStub = defineComponent({
+  name: 'QToggle',
   inheritAttrs: true,
-  setup(_, { attrs }) {
-    return () => h('button', { ...attrs });
+  props: ['modelValue'],
+  emits: ['update:modelValue'],
+  setup(props, { attrs, emit }) {
+    return () =>
+      h('input', {
+        type: 'checkbox',
+        checked: props.modelValue,
+        'aria-label': attrs['aria-label'],
+        'data-testid': attrs['data-testid'],
+        onChange: () => emit('update:modelValue', !props.modelValue),
+        ...attrs,
+      });
   },
 });
 
@@ -49,45 +59,27 @@ describe('MainLayout', () => {
     return mount(MainLayout, {
       global: {
         stubs: {
-          // Override global stubs with passthrough wrappers so the template renders fully
           QLayout: SlotPassthrough,
-          QHeader: SlotPassthrough,
-          QToolbar: SlotPassthrough,
-          QToolbarTitle: SlotPassthrough,
           QPageContainer: SlotPassthrough,
           QDrawer: SlotPassthrough,
           QList: SlotPassthrough,
           QItem: SlotPassthrough,
           QItemSection: SlotPassthrough,
           QItemLabel: SlotPassthrough,
-          // QBtn renders as <button> with all attributes
-          QBtn: QBtnStub,
-          // EssentialLink and router-view remain stubbed
-          EssentialLink: true,
+          QSeparator: true,
+          QIcon: true,
+          QToggle: QToggleStub,
           'router-view': true,
+          RouterLink: true,
         },
       },
     });
   }
 
-  it('renders the dark mode toggle button', () => {
+  it('renders the dark mode toggle', () => {
     const wrapper = mountLayout();
     const toggle = wrapper.find('[data-testid="dark-mode-toggle"]');
     expect(toggle.exists()).toBe(true);
-  });
-
-  it('shows dark_mode icon when dark mode is inactive', () => {
-    darkState.isActive = false;
-    const wrapper = mountLayout();
-    const toggle = wrapper.find('[data-testid="dark-mode-toggle"]');
-    expect(toggle.attributes('icon')).toBe('dark_mode');
-  });
-
-  it('shows light_mode icon when dark mode is active', () => {
-    darkState.isActive = true;
-    const wrapper = mountLayout();
-    const toggle = wrapper.find('[data-testid="dark-mode-toggle"]');
-    expect(toggle.attributes('icon')).toBe('light_mode');
   });
 
   it('has aria-label "Ativar modo escuro" when light mode is active', () => {
@@ -104,10 +96,10 @@ describe('MainLayout', () => {
     expect(toggle.attributes('aria-label')).toBe('Ativar modo claro');
   });
 
-  it('calls $q.dark.toggle() when the toggle button is clicked', async () => {
+  it('calls $q.dark.toggle() when the toggle changes', async () => {
     const wrapper = mountLayout();
     const toggle = wrapper.find('[data-testid="dark-mode-toggle"]');
-    await toggle.trigger('click');
+    await toggle.trigger('change');
     expect(toggleMock).toHaveBeenCalledTimes(1);
   });
 });

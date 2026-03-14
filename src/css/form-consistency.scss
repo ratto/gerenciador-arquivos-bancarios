@@ -1,0 +1,44 @@
+// GAB — Consistência de Formulários
+// Aplica Inter 16px, altura 44px e border-radius 4px a todos os campos Quasar
+
+.q-field__native,
+.q-field__input,
+.q-field__prefix,
+.q-field__suffix {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-size: 1rem !important;
+  font-weight: 400 !important;
+  min-height: var(--gab-form-height, 44px);
+}
+
+.q-field__label {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
+  font-size: 0.875rem !important;
+}
+
+.q-field--outlined .q-field__control {
+  border-radius: 4px !important;
+  min-height: var(--gab-form-height, 44px);
+}
+
+// Borda no estado normal
+.q-field--outlined:not(.q-field--focused):not(.q-field--error) .q-field__control {
+  border: 1.5px solid #d0d8e4;
+}
+
+// Borda no foco
+.q-field--outlined.q-field--focused .q-field__control {
+  border: 1.5px solid #1a3a5c !important;
+}
+
+// Borda no erro
+.q-field--outlined.q-field--error .q-field__control {
+  border: 1.5px solid #d93025 !important;
+}
+
+// Respeitar prefers-reduced-motion nas animações de label
+@media (prefers-reduced-motion: reduce) {
+  .q-field__label {
+    transition: none !important;
+  }
+}

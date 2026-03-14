@@ -3,31 +3,40 @@ describe('Dark Mode Toggle', () => {
     cy.visit('/');
   });
 
-  it('renders the dark mode toggle button in the toolbar', () => {
+  // Helper: opens the navigation drawer via the FAB button
+  function openDrawer() {
+    cy.get('[aria-label="Abrir menu"]').click();
+    // Wait for drawer to be visible
+    cy.get('[data-testid="dark-mode-toggle"]').should('exist');
+  }
+
+  it('renders the dark mode toggle inside the drawer', () => {
+    openDrawer();
     cy.get('[data-testid="dark-mode-toggle"]').should('exist').and('be.visible');
   });
 
-  it('toggles dark mode when clicking the button', () => {
-    // Initially, body should not have body--dark (assuming system prefers light)
-    // Click to enable dark mode
-    cy.get('[data-testid="dark-mode-toggle"]').click();
-    cy.get('body').should('have.class', 'body--dark');
-
-    // Click again to disable dark mode
+  it('toggles dark mode when clicking the toggle', () => {
+    openDrawer();
+    // App starts in dark mode (Dark.set(true) in boot file)
+    // Click once to disable dark mode
     cy.get('[data-testid="dark-mode-toggle"]').click();
     cy.get('body').should('not.have.class', 'body--dark');
+
+    // Click again to re-enable dark mode
+    cy.get('[data-testid="dark-mode-toggle"]').click();
+    cy.get('body').should('have.class', 'body--dark');
   });
 
   it('shows correct aria-label based on current mode', () => {
-    // After toggling to dark mode, aria-label should indicate switching to light
-    cy.get('[data-testid="dark-mode-toggle"]').click();
+    openDrawer();
+    // App starts in dark mode — aria-label should indicate switching to light
     cy.get('[data-testid="dark-mode-toggle"]').should(
       'have.attr',
       'aria-label',
       'Ativar modo claro',
     );
 
-    // After toggling back to light mode, aria-label should indicate switching to dark
+    // Click to switch to light mode
     cy.get('[data-testid="dark-mode-toggle"]').click();
     cy.get('[data-testid="dark-mode-toggle"]').should(
       'have.attr',
@@ -37,11 +46,13 @@ describe('Dark Mode Toggle', () => {
   });
 
   it('applies dark mode immediately without page reload', () => {
-    // Toggle to dark mode and verify it applies without reload
+    openDrawer();
+    // Disable dark mode first
+    cy.get('[data-testid="dark-mode-toggle"]').click();
+    cy.get('body').should('not.have.class', 'body--dark');
+
+    // Re-enable dark mode
     cy.get('[data-testid="dark-mode-toggle"]').click();
     cy.get('body').should('have.class', 'body--dark');
-
-    // Verify the Quasar header adapts (dark class is applied globally)
-    cy.get('.q-header').should('exist');
   });
 });

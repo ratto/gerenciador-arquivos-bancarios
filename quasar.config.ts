@@ -11,7 +11,7 @@ export default defineConfig((/* ctx */) => {
     // app boot file (/src/boot)
     // --> boot files are part of "main.js"
     // https://v2.quasar.dev/quasar-cli-vite/boot-files
-    boot: [],
+    boot: ['dark-mode'],
 
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#css
     css: ['app.scss'],
@@ -86,7 +86,17 @@ export default defineConfig((/* ctx */) => {
     // https://v2.quasar.dev/quasar-cli-vite/quasar-config-file#framework
     framework: {
       config: {
-        dark: 'auto',
+        dark: true,
+        brand: {
+          primary:   '#1A3A5C',
+          secondary: '#0D7377',
+          accent:    '#14BDAC',
+          dark:      '#0F1B2D',
+          positive:  '#21A856',
+          negative:  '#D93025',
+          warning:   '#F5A623',
+          info:      '#1D85C6',
+        },
       },
 
       // iconSet: 'material-icons', // Quasar icon set
@@ -100,7 +110,7 @@ export default defineConfig((/* ctx */) => {
       // directives: [],
 
       // Quasar plugins
-      plugins: [],
+      plugins: ['Dark'],
     },
 
     // animations: 'all', // --- includes all animations
@@ -133,7 +143,6 @@ export default defineConfig((/* ctx */) => {
       // extendSSRWebserverConf (esbuildConf) {},
 
       // manualStoreSerialization: true,
-      // manualStoreSsrContextInjection: true,
       // manualStoreHydration: true,
       // manualPostHydrationTrigger: true,
 

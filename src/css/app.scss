@@ -1,1 +1,61 @@
-// app global css in SCSS form
+// GAB Design System — CSS Variables Globais
+@import 'form-consistency';
+
+:root {
+  // Fontes
+  --gab-font-ui:   'Inter', system-ui, -apple-system, sans-serif;
+  --gab-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  // Escala tipográfica
+  --gab-text-display:  2rem;       // 32px
+  --gab-text-title:    1.5rem;     // 24px
+  --gab-text-subtitle: 1.125rem;   // 18px
+  --gab-text-body:     1rem;       // 16px
+  --gab-text-small:    0.875rem;   // 14px
+  --gab-text-caption:  0.75rem;    // 12px
+  --gab-text-code:     0.8125rem;  // 13px — JetBrains Mono
+
+  // Superfícies — Light Mode
+  --gab-surface-100: #f5f7fa;
+  --gab-surface-200: #e8edf3;
+  --gab-border:      #d0d8e4;
+  --gab-text-color:  #3d5166;
+  --gab-text-muted:  #a0aeba;
+
+  // Superfícies — Dark Mode
+  --gab-dark-bg:      #131f2e;
+  --gab-dark-surface: #1e2d40;
+  --gab-dark-border:  #2a3f58;
+  --gab-dark-text:    #e8edf3;
+
+  // Radius
+  --gab-radius-sm: 4px;
+  --gab-radius-md: 8px;
+  --gab-radius-lg: 12px;
+
+  // Sombras
+  --gab-shadow-card:  0 1px 3px rgba(15, 27, 45, 0.08);
+  --gab-shadow-hover: 0 4px 12px rgba(15, 27, 45, 0.12);
+
+  // Formulários — BASE UNIVERSAL
+  --gab-form-font:    'Inter', system-ui, sans-serif;
+  --gab-form-size:    1rem;    // 16px
+  --gab-form-height:  44px;
+  --gab-form-radius:  4px;
+  --gab-form-border:  1.5px solid #d0d8e4;
+}
+
+// Tipografia global
+body {
+  font-family: var(--gab-font-ui);
+  font-size: var(--gab-text-body);
+  color: var(--gab-text-color);
+}
+
+// Valores CNAB / código: JetBrains Mono
+.gab-mono,
+.gab-cnab-value {
+  font-family: var(--gab-font-mono);
+  font-size: var(--gab-text-code);
+  line-height: 1.7;
+}

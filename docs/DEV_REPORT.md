@@ -1,65 +1,84 @@
-# DEV REPORT — 01 - Dark Mode — Ciclo 1
+# DEV REPORT — Identidade Visual GAB — Ciclo 004
 
-> Escrito pelo AGENT_DEV apos concluir todas as tarefas.
+> Escrito pelo AGENT_DEV após concluir todas as tarefas.
 > Lido pelo AGENT_QA.
 
 ## Resumo
 
-Implementacao do suporte a dark mode na aplicacao. A feature consiste em:
-1. Configuracao do Quasar Dark Plugin para deteccao automatica de preferencia do sistema (`dark: 'auto'` em `quasar.config.ts`).
-2. Botao de toggle no toolbar do `MainLayout.vue` com icone dinamico, aria-label acessivel e acao de alternancia imediata.
-3. Suite de 6 testes de componente para `MainLayout.vue` cobrindo renderizacao, icones dinamicos, aria-labels e interacao de click.
+Implementação completa da identidade visual GAB conforme o guia `docs/identidade-visual-gab.md` e os Acceptance Criteria do `docs/SPEC.md`. O ciclo cobriu: paleta de cores da marca no Quasar, variáveis SCSS, CSS variables globais, SCSS de consistência de formulários, fontes Google Fonts via CDN, boot file de dark mode, `LandingLayout` sem topbar, rota raiz atualizada, `LandingPage` com 6 seções completas, `MainLayout` refatorado para uso futuro com toggle no drawer, e testes de componente para ambos os layouts.
 
 ## Status
 
-- [x] Todas as tarefas do TASKS.md concluidas
-- [x] `npm run lint` passou (0 erros, 0 warnings)
-- [x] `npm test` passou (6 tests passed, 1 test file, 0 failures)
+- [x] Todas as tarefas do TASKS.md concluídas (Tarefas 1 a 10)
+- [x] `npm run lint` passou — saída vazia (0 erros, 0 warnings)
+- [x] `npm test` passou — `Test Files  2 passed (2)` | `Tests  16 passed (16)`
 
 ## Arquivos Alterados
 
-| Arquivo | Tipo de mudanca | Descricao |
+| Arquivo | Tipo de mudança | Descrição |
 |---------|----------------|-----------|
-| `quasar.config.ts` | modificado | Adicionado `dark: 'auto'` em `framework.config` para deteccao automatica de tema do sistema |
-| `src/layouts/MainLayout.vue` | modificado | Adicionado `q-btn` de toggle com icone dinamico, aria-label e data-testid; importado `useQuasar` |
-| `tests/vitest/src/layouts/MainLayout.spec.ts` | criado | 6 testes de componente: renderizacao do toggle, icone claro/escuro, aria-label claro/escuro, chamada ao toggle |
+| `src/css/quasar.variables.scss` | modificado | Paleta de cores GAB substituindo os defaults do Quasar |
+| `quasar.config.ts` | modificado | `dark: true`, objeto `brand` com 8 cores, plugin `Dark`, boot `dark-mode` |
+| `src/css/app.scss` | modificado | CSS variables globais `--gab-*` e import de `form-consistency` |
+| `src/css/form-consistency.scss` | criado | SCSS de consistência de formulários: Inter 16px, 44px, border-radius 4px |
+| `index.html` | modificado | `lang="pt-BR"`, tags `<link>` do Google Fonts (Inter + JetBrains Mono) |
+| `src/boot/dark-mode.ts` | criado | Boot file que chama `Dark.set(true)` na inicialização |
+| `src/layouts/LandingLayout.vue` | criado | Layout minimalista sem QHeader, apenas `<router-view />` |
+| `src/layouts/MainLayout.vue` | modificado | Removido QHeader; toggle dark mode movido para o QDrawer |
+| `src/router/routes.ts` | modificado | Rota raiz usa `LandingLayout` + `LandingPage` |
+| `src/pages/LandingPage.vue` | criado | Landing page com 6 seções: Hero, Features, Como Funciona, Tecnologias, CTA Final, Footer + QDrawer retrátil |
+| `tests/vitest/src/layouts/MainLayout.spec.ts` | modificado | Stubs atualizados para QToggle; testes adaptados para nova estrutura sem QHeader |
+| `tests/vitest/src/pages/LandingPage.spec.ts` | criado | 12 testes de componente cobrindo: hero, FAB, drawer, toggle dark mode, seções, footer |
 
-## Decisoes de Arquitetura
+## Decisões de Arquitetura
 
-1. Decisao: Nao criar composable ou Pinia store para o dark mode.
-   Motivo: Conforme especificado na SPEC, o Quasar Dark Plugin ja mantem estado reativo global via `$q.dark`. A logica e simples o suficiente para residir diretamente no `<script setup>` de `MainLayout.vue` via `useQuasar()`.
+1. Decisão: SCSS scoped com `:global(.body--dark)` em vez de `.body--dark &` na LandingPage.
+   Motivo: Como o componente usa `<style lang="scss" scoped>`, os seletores de contexto que referenciam elementos fora do componente (como `.body--dark` no `<body>`) precisam de `:global()` para não serem reescritos pelo hash de scoping do Vue. Sem isso, as regras de dark mode nunca seriam aplicadas.
 
-2. Decisao: Usar stubs customizados nos testes em vez dos stubs `true` globais.
-   Motivo: O `vitest.setup.ts` registra `QBtn: true` como stub global, que renderiza `<q-btn-stub>` sem preservar atributos como `data-testid`. Para possibilitar a selecao por `data-testid`, o teste usa um stub customizado `QBtnStub` que renderiza como `<button>` preservando todos os atributos via `inheritAttrs: true`.
+2. Decisão: `QDrawerStub` no spec da LandingPage renderiza o slot apenas quando `modelValue` é `true`.
+   Motivo: Permite testar o comportamento de abertura do drawer de forma realista — antes do clique no FAB o toggle não existe no DOM, após o clique fica visível.
 
-## Limitacoes Conhecidas / Divida Tecnica
+3. Decisão: A LandingPage não usa `QPage` (que requer `QLayout`), conforme determinado pelas restrições técnicas da spec. Toda a estrutura é composta de `<div>`, `<section>`, `<footer>` semânticos.
 
-- Warnings de Vue sobre "extraneous non-props attributes" aparecem durante os testes. Sao inofensivos e decorrem dos stubs passthrough que nao declaram props para os atributos dos componentes Quasar (ex.: `view`, `elevated`, `bordered`). Nao afetam a corretude dos testes.
+4. Decisão: `data-testid="dark-mode-toggle"` preservado tanto no `MainLayout` quanto na `LandingPage`.
+   Motivo: A spec (AC10) exige que o testid seja mantido para compatibilidade com os testes E2E existentes (`tests/e2e/dark-mode.cy.ts`). Como a rota raiz agora é a `LandingPage`, os testes E2E encontrarão o toggle nela.
 
-## Saida dos Testes
+## Limitações Conhecidas / Dívida Técnica
+
+- Os warnings de `v-ripple` nos testes são esperados — a diretiva não é registrada no ambiente Vitest. Não afetam os resultados dos testes.
+- Os links de navegação do QDrawer na LandingPage (Início, Funcionalidades, Como Funciona) usam ancora sem `href` — navegação por scroll será implementada em ciclo futuro.
+- O botão "Acessar o app" no CTA final e na hero ainda não tem rota definida — aguarda implementação das rotas internas em ciclos futuros.
+- O arquivo `src/pages/IndexPage.vue` ainda existe no repositório mas não é mais referenciado por nenhuma rota. Pode ser removido em ciclo futuro.
+
+## Saída dos Testes
 
 ```
- RUN  v4.0.18 /home/ratto/Workspaces/app/gerenciador-arquivos-bancarios
+> gerenciador-arquivos-bancarios@0.0.1 test
+> vitest run
 
- v tests/vitest/src/layouts/MainLayout.spec.ts (6 tests) 56ms
+ RUN  v4.0.18 /home/ratto/Workspace/app/gerenciador-arquivos-bancarios
 
- Test Files  1 passed (1)
-      Tests  6 passed (6)
-   Start at  01:41:47
-   Duration  862ms (transform 217ms, setup 101ms, import 192ms, tests 56ms, environment 230ms)
+ ✓ tests/vitest/src/pages/LandingPage.spec.ts (12 tests) 105ms
+ ✓ tests/vitest/src/layouts/MainLayout.spec.ts (4 tests) 53ms
+
+ Test Files  2 passed (2)
+      Tests  16 passed (16)
 ```
 
-## Saida do Lint
+## Saída do Lint
 
 ```
 > gerenciador-arquivos-bancarios@0.0.1 lint
 > eslint -c ./eslint.config.js "./src*/**/*.{ts,js,cjs,mjs,vue}"
 
-(sem erros)
+(saída vazia — 0 erros, 0 warnings)
 ```
 
 ## Notas para o QA
 
-- A feature nao envolve logica CNAB — a secao de "Verificacao de Corretude CNAB" do QA_REPORT pode ser marcada como N/A.
-- Os warnings de Vue nos testes sao esperados e documentados acima.
-- O teste de click (`calls $q.dark.toggle()`) verifica que a funcao mock `toggle` foi chamada exatamente 1 vez apos o click, validando a integracao entre o template e o `useQuasar()`.
+- Verificar que AC8 (sem QHeader na rota raiz) está satisfeito: `LandingLayout.vue` não contém `QHeader` nem `QLayout`.
+- Verificar AC10 (toggle exclusivamente no drawer): o `data-testid="dark-mode-toggle"` está no QDrawer tanto do `MainLayout.vue` quanto da `LandingPage.vue`.
+- Verificar AC15 (testes do MainLayout continuam passando): 4 testes passam.
+- Verificar AC16 (testes da LandingPage): 12 testes cobrem hero, FAB, drawer, toggle, seções com aria-label e footer.
+- A feature não envolve lógica CNAB — a seção de corretude CNAB no QA_REPORT pode ser marcada como N/A.
+- Os warnings de Vue nos testes são esperados e documentados acima.
